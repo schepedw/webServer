@@ -21,6 +21,9 @@
  
 package protocol;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * This class is a collection of HTTP protocol related constants, 
  * that can be used uniformly across the classes of this project.
@@ -42,6 +45,7 @@ public class Protocol {
 	public static final String POST = "POST";
 	public static final String PUT = "PUT";
 	public static final String DELETE = "DELETE";
+	public static final List<String> VALID_REQUESTS = Arrays.asList(GET, POST, PUT, DELETE);
     
     // Some useful http codes and text
     public static final int OK_CODE = 200;

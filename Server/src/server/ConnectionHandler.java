@@ -24,9 +24,7 @@ package server;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 
 import protocol.HttpRequest;
 import protocol.HttpResponse;
@@ -136,7 +134,7 @@ public class ConnectionHandler implements Runnable {
 			if(!request.getVersion().equalsIgnoreCase(Protocol.VERSION)) {
 				response = HttpResponseFactory.create505NotSupported(Protocol.CLOSE);
 			}
-			else if(request.getMethod().equalsIgnoreCase(Protocol.GET)) {
+			if(Protocol.VALID_REQUESTS.contains(request.getMethod())) {
 				String uri = request.getUri();				
 				File file = getFile(uri);
 				if (file == null) {
@@ -144,56 +142,6 @@ public class ConnectionHandler implements Runnable {
 				}	
 				else {
 					response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
-				}	
-			}
-			else if(request.getMethod().equalsIgnoreCase(Protocol.POST)){
-				String uri = request.getUri();
-				File file = new File(server.getRootDirectory() + uri);
-				if (!file.exists()){
-					response = HttpResponseFactory.create404NotFound(Protocol.CLOSE);
-				}
-				else {
-					SimpleDateFormat sdf = new SimpleDateFormat("MM-dd-yyy_HH-mm-ss");
-					String timestamp = sdf.format(start);
-					// I currently have the body being added to an HTML file, this should be changed
-					// but doing html is friendly for a browser demonstration and testing
-					String postPath = file.getPath() + File.separator + timestamp + ".html";
-					File postFile = new File(postPath);
-					
-					// Create a new file that is a subordinate at the given URI
-					postFile.createNewFile();
-					PrintWriter writer = new PrintWriter(postPath, "UTF-8");
-					writer.print(request.getBody());
-					writer.close();
-					
-					String postFileURL = uri + File.separator + timestamp + ".html";
-					response = HttpResponseFactory.create301PermanentlyMoved(postFileURL, Protocol.CLOSE);	
-				}
-			}
-			else if(request.getMethod().equalsIgnoreCase(Protocol.PUT)){
-				String uri = request.getUri();
-				File file = getFile(uri);
-				if (file == null){
-					response = HttpResponseFactory.create404NotFound(Protocol.CLOSE);
-				}
-				else {
-					PrintWriter writer = new PrintWriter(file.getPath(), "UTF-8");
-					writer.print(request.getBody());
-					writer.close();
-					
-					response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
-				}	
-			}
-			else if(request.getMethod().equalsIgnoreCase(Protocol.DELETE)){
-				String uri = request.getUri();
-				File file = getFile(uri);
-				if (getFile(uri) == null){
-					response = HttpResponseFactory.create404NotFound(Protocol.CLOSE);
-				}
-				else {
-					response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
-					response.setFile(null);
-					file.delete();
 				}	
 			}
 			else {
@@ -213,11 +161,6 @@ public class ConnectionHandler implements Runnable {
 			// We will ignore this exception
 			e.printStackTrace();
 		} 
-		
-		System.out.println("Request");
-		System.out.println(request);
-		System.out.println("Response");
-		System.out.println(response);
 		
 		// Increment number of connections by 1
 		server.incrementConnections(1);
