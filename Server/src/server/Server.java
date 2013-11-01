@@ -26,6 +26,7 @@ import gui.WebServer;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 
 /**
  * This represents a welcoming server for the incoming
@@ -38,6 +39,8 @@ public class Server implements Runnable {
 	private int port;
 	private boolean stop;
 	private ServerSocket welcomeSocket;
+	private HashMap<String, ServletInterface> servlets; 
+	private final ServletLoader loader = new ServletLoader();
 	
 	private long connections;
 	private long serviceTime;
@@ -54,6 +57,7 @@ public class Server implements Runnable {
 		this.connections = 0;
 		this.serviceTime = 0;
 		this.window = window;
+		this.servlets = loader.generateHash();
 	}
 
 	/**
@@ -160,12 +164,16 @@ public class Server implements Runnable {
 	}
 	
 	/**
-	 * Checks if the server is stopeed or not.
+	 * Checks if the server is stopped or not.
 	 * @return
 	 */
 	public boolean isStoped() {
 		if(this.welcomeSocket != null)
 			return this.welcomeSocket.isClosed();
 		return true;
+	}
+	
+	public void updateServletsHash() {
+		this.servlets = loader.generateHash();
 	}
 }

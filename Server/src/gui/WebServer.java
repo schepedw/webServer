@@ -31,6 +31,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 import server.Server;
+import server.ServletWatcher;
 
 /**
  * The application window for the {@link Server}, where you can update
@@ -259,6 +260,7 @@ public class WebServer extends JFrame {
 	public static void main(String args[]) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
+				new ServletWatcher();
 				new WebServer().setVisible(true);
 			}
 		});
