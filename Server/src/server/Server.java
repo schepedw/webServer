@@ -39,8 +39,8 @@ public class Server implements Runnable {
 	private int port;
 	private boolean stop;
 	private ServerSocket welcomeSocket;
-	private HashMap<String, ServletInterface> servlets; 
-	private final ServletLoader loader = new ServletLoader();
+	private HashMap<String, Plugin> plugins; 
+	private final PluginLoader loader = new PluginLoader();
 	
 	private long connections;
 	private long serviceTime;
@@ -57,7 +57,7 @@ public class Server implements Runnable {
 		this.connections = 0;
 		this.serviceTime = 0;
 		this.window = window;
-		this.servlets = loader.generateHash();
+		this.plugins = loader.generateHash();
 	}
 
 	/**
@@ -174,6 +174,6 @@ public class Server implements Runnable {
 	}
 	
 	public void updateServletsHash() {
-		this.servlets = loader.generateHash();
+		this.plugins = loader.generateHash();
 	}
 }

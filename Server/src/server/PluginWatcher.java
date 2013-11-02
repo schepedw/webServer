@@ -3,6 +3,7 @@ package server;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+import gui.WebServer;
 
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
@@ -24,19 +25,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class ServletWatcher {
+public class PluginWatcher {
 
 	private ExecutorService service = Executors.newCachedThreadPool();
 	private FileSystem fs;
 	private WatchService ws;
 	private Map<WatchKey, Path> keys;
 
-	public ServletWatcher() {
+	public PluginWatcher() {
 		try {
 			fs = FileSystems.getDefault();
 			ws = fs.newWatchService();
 			keys = new ConcurrentHashMap<>();
-			register(fs.getPath("servlets"), keys, ws);
+			register(fs.getPath("plugins"), keys, ws);
 			
 			service.submit(new ServletFolderScanner());
 		} catch (IOException e) {
@@ -88,7 +89,9 @@ public class ServletWatcher {
 						WatchEvent.Kind<Path> kind = event.kind();
 						Path name = event.context();
 						Path child = path.resolve(name);
-
+						//Update the server's servlet hash
+						System.out.println(path + " " + kind);
+						WebServer.server.updateServletsHash();
 						if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
 							// Walk the directory if multiple files added (like the whole servlet folder)
 							if (Files.isDirectory(child, LinkOption.NOFOLLOW_LINKS)) {

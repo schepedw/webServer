@@ -135,6 +135,11 @@ public class ConnectionHandler implements Runnable {
 				response = HttpResponseFactory.create505NotSupported(Protocol.CLOSE);
 			}
 			if(Protocol.VALID_REQUESTS.contains(request.getMethod())) {
+				// TODO: 
+				// Lookup the plugin based on the URI using a context root file
+				// Grab the plugin from the hash
+				// Have the plugin handle the request. 
+				// The plugin will handle sending it to the appropriate servlet
 				String uri = request.getUri();				
 				File file = getFile(uri);
 				if (file == null) {
