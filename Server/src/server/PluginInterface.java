@@ -9,5 +9,5 @@ public interface PluginInterface {
 	 */
 	public void directRequest(HttpRequest request);
 
-	public boolean authenticate();
+	public boolean isAuthenticated();
 }

@@ -127,6 +127,22 @@ public class HttpResponseFactory {
 	}
 	
 	/**
+	 * Creates a {@link HttpResponse} object for sending bad request response.
+	 * 
+	 * @param connection Supported values are {@link Protocol#OPEN} and {@link Protocol#CLOSE}.
+	 * @return A {@link HttpResponse} object represent 400 status.
+	 */
+	public static HttpResponse create401AccessDenied(String connection) {
+		HttpResponse response = new HttpResponse(Protocol.VERSION, Protocol.ACCESS_DENIED_CODE, 
+				Protocol.ACCESS_DENIED_TEXT, new HashMap<String, String>(), null);
+		
+		response.put(Protocol.AUTHENTICATE, "Basic realm=\"WebServer\"");
+		response.put(Protocol.CONTENT_LENGTH, "0");
+		
+		return response;
+	}
+	
+	/**
 	 * Creates a {@link HttpResponse} object for sending not found response.
 	 * 
 	 * @param connection Supported values are {@link Protocol#OPEN} and {@link Protocol#CLOSE}.

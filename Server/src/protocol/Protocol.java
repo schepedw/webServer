@@ -60,6 +60,9 @@ public class Protocol {
     public static final int BAD_REQUEST_CODE = 400;
     public static final String BAD_REQUEST_TEXT = "Bad Request";
     
+    public static final int ACCESS_DENIED_CODE = 401;
+    public static final String ACCESS_DENIED_TEXT = "Access Denied";
+    
     public static final int NOT_FOUND_CODE = 404;
     public static final String NOT_FOUND_TEXT = "Not Found";
     
@@ -77,6 +80,7 @@ public class Protocol {
     public static final String LAST_MODIFIED = "Last-Modified";
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String CONTENT_TYPE = "Content-Type";
+    public static final String AUTHENTICATE = "WWW-Authenticate";
     
     /**
      * A chunk size to be used when reading a file and sending it to a socket. 

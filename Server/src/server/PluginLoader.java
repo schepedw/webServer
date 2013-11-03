@@ -10,21 +10,21 @@ public class PluginLoader {
 
 	public HashMap<String, PluginInterface> generateHash() {
 		HashMap<String, PluginInterface> PluginInterfaceHash = new HashMap<String, PluginInterface>();
-		File PluginInterfacesFolder = new File("PluginInterfaces");
-		File[] PluginInterfaceFiles = PluginInterfacesFolder.listFiles();
+		File PluginFolder = new File("plugins");
+		File[] PluginFiles = PluginFolder.listFiles();
 		
 		try {
 			@SuppressWarnings("deprecation")
-			URL PluginInterfaceURL = PluginInterfacesFolder.toURL();
+			URL PluginInterfaceURL = PluginFolder.toURL();
 			URL[] urls = new URL[]{ PluginInterfaceURL };
 			
 			@SuppressWarnings("resource")
 			ClassLoader loader = new URLClassLoader(urls);			
 			
-			for (File PluginInterfaceFile : PluginInterfaceFiles) {
+			for (File PluginFile : PluginFiles) {
 				// Build the URL - strip PluginInterfaces\ and find PluginInterface.class
-				String pack = PluginInterfaceFile.toString().substring(8);
-				String classURL = pack + ".PluginInterface";
+				String pack = PluginFile.toString().substring(8);
+				String classURL = pack + ".Plugin";
 				PluginInterface PluginInterface = (PluginInterface) loader.loadClass(classURL).newInstance();
 				PluginInterfaceHash.put(pack, PluginInterface);
 			}
