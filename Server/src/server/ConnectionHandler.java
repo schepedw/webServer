@@ -25,8 +25,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -74,11 +74,9 @@ public class ConnectionHandler implements Runnable {
 		
 		InputStream inStream = null;
 		OutputStream outStream = null;
-		InetAddress inetAdr = null;
 		
 		try {
 			inStream = this.socket.getInputStream();
-			inetAdr =  this.socket.getInetAddress();
 			outStream = this.socket.getOutputStream();
 		}
 		catch(Exception e) {
@@ -143,19 +141,18 @@ public class ConnectionHandler implements Runnable {
 				response = HttpResponseFactory.create505NotSupported(Protocol.CLOSE);
 			}
 			if(Protocol.VALID_REQUESTS.contains(request.getMethod())) {
-				// TODO: 
-				// Lookup the plugin based on the URI using a context root file
-				// Grab the plugin from the hash
-				// Have the plugin handle the request. 
-				// The plugin will handle sending it to the appropriate servlet
-				String uri = request.getUri();				
-				File file = getFile(uri);
-				String crps = getContextRootPluginString(file, uri);
+				
+				String uri = request.getUri();
+				File file = new File("ContextRootFile.txt");
 				
 				if (file == null) {
 					response = HttpResponseFactory.create404NotFound(Protocol.CLOSE);
 				}	
 				else {
+					String crps = getContextRootPluginString(file, uri);
+					HashMap<String, Plugin> plugins = this.server.getPlugins();
+					Plugin thePlugin = plugins.get(crps);
+					thePlugin.directRequest(request);
 					response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
 				}	
 			}
@@ -179,7 +176,6 @@ public class ConnectionHandler implements Runnable {
 		
 		// Increment number of connections by 1
 		server.incrementConnections(1);
-		server.addClient(inetAdr);
 		// Get the end time
 		long end = System.currentTimeMillis();
 		this.server.incrementServiceTime(end-start);
@@ -192,7 +188,6 @@ public class ConnectionHandler implements Runnable {
 		 */
 		StringTokenizer uriTokenizer = new StringTokenizer(uri, "/");
 		String relativeURI = uriTokenizer.nextToken();
-		relativeURI = uriTokenizer.nextToken();
 		Scanner fileReader = null;
 		try {
 			fileReader = new Scanner(file);
@@ -202,13 +197,15 @@ public class ConnectionHandler implements Runnable {
 		}
 		String line = "";
 		String pluginString = "";
-		Pattern uriPattern = Pattern.compile("\\b/"+relativeURI+"\\b", Pattern.CASE_INSENSITIVE);
+		Pattern uriPattern = Pattern.compile(relativeURI+":(?<pluginKey>.*)");
+		
 		while(fileReader.hasNext()){
 			line = fileReader.nextLine();
 			Matcher matcher = uriPattern.matcher(line);
+			System.out.println("fileLine: "+line);
 			if(matcher.matches()){
-				String[] lineSplitBySpace = line.split(" ");
-				pluginString = lineSplitBySpace[2];
+				String[] lineSplitBySpace = line.split(":");
+				pluginString = lineSplitBySpace[1];
 				break;
 			}
 			
