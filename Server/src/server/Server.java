@@ -39,7 +39,7 @@ public class Server implements Runnable {
 	private int port;
 	private boolean stop;
 	private ServerSocket welcomeSocket;
-	private HashMap<String, Plugin> plugins; 
+	private HashMap<String, PluginInterface> plugins; 
 	private final PluginLoader loader = new PluginLoader();
 	
 	private long connections;

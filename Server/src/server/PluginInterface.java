@@ -2,7 +2,7 @@ package server;
 
 import protocol.HttpRequest;
 
-public interface Plugin {
+public interface PluginInterface {
 	
 	/**
 	 * Direct request to the appropriate plugin

@@ -8,34 +8,34 @@ import java.util.HashMap;
 
 public class PluginLoader {
 
-	public HashMap<String, Plugin> generateHash() {
-		HashMap<String, Plugin> pluginHash = new HashMap<String, Plugin>();
-		File pluginsFolder = new File("plugins");
-		File[] pluginFiles = pluginsFolder.listFiles();
+	public HashMap<String, PluginInterface> generateHash() {
+		HashMap<String, PluginInterface> PluginInterfaceHash = new HashMap<String, PluginInterface>();
+		File PluginInterfacesFolder = new File("PluginInterfaces");
+		File[] PluginInterfaceFiles = PluginInterfacesFolder.listFiles();
 		
 		try {
 			@SuppressWarnings("deprecation")
-			URL pluginURL = pluginsFolder.toURL();
-			URL[] urls = new URL[]{ pluginURL };
+			URL PluginInterfaceURL = PluginInterfacesFolder.toURL();
+			URL[] urls = new URL[]{ PluginInterfaceURL };
 			
 			@SuppressWarnings("resource")
 			ClassLoader loader = new URLClassLoader(urls);			
 			
-			for (File pluginFile : pluginFiles) {
-				// Build the URL - strip plugins\ and find Plugin.class
-				String pack = pluginFile.toString().substring(8);
-				String classURL = pack + ".Plugin";
-				Plugin plugin = (Plugin) loader.loadClass(classURL).newInstance();
-				pluginHash.put(pack, plugin);
+			for (File PluginInterfaceFile : PluginInterfaceFiles) {
+				// Build the URL - strip PluginInterfaces\ and find PluginInterface.class
+				String pack = PluginInterfaceFile.toString().substring(8);
+				String classURL = pack + ".PluginInterface";
+				PluginInterface PluginInterface = (PluginInterface) loader.loadClass(classURL).newInstance();
+				PluginInterfaceHash.put(pack, PluginInterface);
 			}
 
 		} catch (MalformedURLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			System.out.println("CRITICAL - Error invalid plugin detected!");
+			System.out.println("CRITICAL - Error invalid PluginInterface detected!");
 			// TODO: DISABLED FOR WATCHER TESTING
 			// System.exit(-1);
 		}
 		
-		return pluginHash;
+		return PluginInterfaceHash;
 	}
 
 }
