@@ -152,6 +152,7 @@ public class ConnectionHandler implements Runnable {
 					String crps = getContextRootPluginString(file, uri);
 					HashMap<String, PluginInterface> plugins = this.server.getPlugins();
 					PluginInterface plugin = plugins.get(crps);
+					System.out.println(request);
 					if (plugin.isAuthenticated(request)) {
 						plugin.directRequest(request);
 						response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
