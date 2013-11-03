@@ -81,7 +81,6 @@ public class Protocol {
     public static final String CONTENT_LENGTH = "Content-Length";
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String AUTHENTICATE = "WWW-Authenticate";
-    public static final String AUTHORIZATION = "Authorization";
     
     /**
      * A chunk size to be used when reading a file and sending it to a socket. 

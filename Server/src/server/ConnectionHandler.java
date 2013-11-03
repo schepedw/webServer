@@ -143,19 +143,17 @@ public class ConnectionHandler implements Runnable {
 			if(Protocol.VALID_REQUESTS.contains(request.getMethod())) {
 				
 				String uri = request.getUri();
-				File file = new File("ContextRootFile.txt");
+				File root = new File("ContextRootFile.txt");
+				String crps = getContextRootPluginString(root, uri);
+				HashMap<String, PluginInterface> plugins = this.server.getPlugins();
+				PluginInterface plugin = plugins.get(crps);
 				
-				if (!file.exists()) {
+				if (plugin == null) {
 					response = HttpResponseFactory.create404NotFound(Protocol.CLOSE);
-				}	
-				else {
-					String crps = getContextRootPluginString(file, uri);
-					HashMap<String, PluginInterface> plugins = this.server.getPlugins();
-					PluginInterface plugin = plugins.get(crps);
-					System.out.println(request);
+				} else {
 					if (plugin.isAuthenticated(request)) {
 						plugin.directRequest(request);
-						response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
+						response = plugin.getResponse();
 					} else {
 						response = HttpResponseFactory.create401AccessDenied(Protocol.CLOSE);
 					}
@@ -202,7 +200,6 @@ public class ConnectionHandler implements Runnable {
 		while(fileReader.hasNext()){
 			line = fileReader.nextLine();
 			Matcher matcher = uriPattern.matcher(line);
-			System.out.println("fileLine: "+line);
 			if(matcher.matches()){
 				String[] lineSplitBySpace = line.split(":");
 				pluginString = lineSplitBySpace[1];
@@ -214,25 +211,5 @@ public class ConnectionHandler implements Runnable {
 		
 		return pluginString;
 		
-	}
-
-	private File getFile(String uri) {
-		String rootDirectory = server.getRootDirectory();
-		// Combine them together to form absolute file path
-		File file = new File(rootDirectory + uri);
-		// Check if the file exists
-		if(file.exists()) {
-			if(file.isDirectory()) {
-				// Look for default index.html file in a directory
-				String location = rootDirectory + uri + System.getProperty("file.separator") + Protocol.DEFAULT_FILE;
-				file = new File(location);
-				return file.exists()? file: null;
-			}else { 
-				// Its a file
-				return file;
-			}
-		} else {
-			return null;
-		}
 	}
 }

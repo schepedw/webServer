@@ -140,15 +140,16 @@ public class HttpRequest {
 		// e.g. Host: www.rose-hulman.edu
 		// We will convert both the strings to lower case to be able to search later
 		while(reader.hasNext() && !(line = reader.nextLine()).isEmpty()) {
-			Pattern regex = Pattern.compile("(?<key>.+): (?<value>.+)");
+			Pattern regex = Pattern.compile("(?<key>.+):(?<value>.+)");
 			Matcher matcher = regex.matcher(line);
 			if (matcher.matches()) {
 				// Now lets break the string in two parts
 				String key = matcher.group("key").toLowerCase();
-				String value = matcher.group("value");
+				String value = matcher.group("value").trim();
 				
 				// Now lets put the key=>value mapping to the header map
 				request.header.put(key, value);
+				
 			} else {
 				// We didnt match the header pattern. This is a bad request
 				reader.close();
@@ -162,7 +163,6 @@ public class HttpRequest {
 				request.body += line;
 			}
 		}
-		
 		reader.close();
 		return request;
 	}

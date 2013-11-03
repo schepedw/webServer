@@ -25,6 +25,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Scans the plugins directory to load the plugins into our hash
+ * this is taken mostly from the Java WatchService tutorial
+ * 
+ * @author wagnerrj
+ *
+ */
 public class PluginWatcher {
 
 	private ExecutorService service = Executors.newCachedThreadPool();
@@ -89,8 +96,6 @@ public class PluginWatcher {
 						WatchEvent.Kind<Path> kind = event.kind();
 						Path name = event.context();
 						Path child = path.resolve(name);
-						//Update the server's servlet hash
-						System.out.println(path + " " + kind);
 						WebServer.server.updateServletsHash();
 						if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
 							// Walk the directory if multiple files added (like the whole servlet folder)
