@@ -79,6 +79,13 @@ public class Server implements Runnable {
 	public int getPort() {
 		return port;
 	}
+	
+	/**
+	 * @return the plugin hash
+	 */
+	public HashMap<String, PluginInterface> getPlugins() {
+		return plugins;
+	}
 
 	/**
 	 * Returns connections serviced per second. Synchronized to be used in

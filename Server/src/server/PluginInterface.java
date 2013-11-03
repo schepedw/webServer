@@ -8,4 +8,6 @@ public interface PluginInterface {
 	 * Direct request to the appropriate plugin
 	 */
 	public void directRequest(HttpRequest request);
+
+	public boolean authenticate();
 }

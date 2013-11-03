@@ -145,15 +145,19 @@ public class ConnectionHandler implements Runnable {
 				String uri = request.getUri();
 				File file = new File("ContextRootFile.txt");
 				
-				if (file == null) {
+				if (!file.exists()) {
 					response = HttpResponseFactory.create404NotFound(Protocol.CLOSE);
 				}	
 				else {
 					String crps = getContextRootPluginString(file, uri);
-					HashMap<String, Plugin> plugins = this.server.getPlugins();
-					Plugin thePlugin = plugins.get(crps);
-					thePlugin.directRequest(request);
-					response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
+					HashMap<String, PluginInterface> plugins = this.server.getPlugins();
+					PluginInterface plugin = plugins.get(crps);
+					if (plugin.authenticate()) {
+						plugin.directRequest(request);
+						response = HttpResponseFactory.create200OK(file, Protocol.CLOSE);
+					} else {
+						// Something
+					}
 				}	
 			}
 			else {
@@ -182,17 +186,12 @@ public class ConnectionHandler implements Runnable {
 	}
 	
 	private String getContextRootPluginString(File file, String uri) {
-		/*
-		 * The path 
-		 * 
-		 */
 		StringTokenizer uriTokenizer = new StringTokenizer(uri, "/");
 		String relativeURI = uriTokenizer.nextToken();
 		Scanner fileReader = null;
 		try {
 			fileReader = new Scanner(file);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			System.out.println("File was not found, invalid file when matching uri to context root file");
 		}
 		String line = "";
@@ -210,6 +209,8 @@ public class ConnectionHandler implements Runnable {
 			}
 			
 		}
+		fileReader.close();
+		
 		return pluginString;
 		
 	}
