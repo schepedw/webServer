@@ -22,9 +22,14 @@
 package server;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import protocol.HttpRequest;
 import protocol.HttpResponse;
@@ -142,6 +147,8 @@ public class ConnectionHandler implements Runnable {
 				// The plugin will handle sending it to the appropriate servlet
 				String uri = request.getUri();				
 				File file = getFile(uri);
+				String crps = getContextRootPluginString(file, uri);
+				
 				if (file == null) {
 					response = HttpResponseFactory.create404NotFound(Protocol.CLOSE);
 				}	
@@ -174,6 +181,38 @@ public class ConnectionHandler implements Runnable {
 		this.server.incrementServiceTime(end-start);
 	}
 	
+	private String getContextRootPluginString(File file, String uri) {
+		/*
+		 * The path 
+		 * 
+		 */
+		StringTokenizer uriTokenizer = new StringTokenizer(uri, "/");
+		String relativeURI = uriTokenizer.nextToken();
+		relativeURI = uriTokenizer.nextToken();
+		Scanner fileReader = null;
+		try {
+			fileReader = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			System.out.println("File was not found, invalid file when matching uri to context root file");
+		}
+		String line = "";
+		String pluginString = "";
+		Pattern uriPattern = Pattern.compile("\\b/"+relativeURI+"\\b", Pattern.CASE_INSENSITIVE);
+		while(fileReader.hasNext()){
+			line = fileReader.nextLine();
+			Matcher matcher = uriPattern.matcher(line);
+			if(matcher.matches()){
+				String[] lineSplitBySpace = line.split(" ");
+				pluginString = lineSplitBySpace[2];
+				break;
+			}
+			
+		}
+		return pluginString;
+		
+	}
+
 	private File getFile(String uri) {
 		String rootDirectory = server.getRootDirectory();
 		// Combine them together to form absolute file path
